@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+            background-color: #0000009c;
+        }
+
+        #campo-pergunta {
+            width: 100%;
+            border-radius: 17px;
+            height: 24px;
+            background-color: #ffffff8c;
+            font-weight: bold;
+            text-align: justify;
+            color: #2b5458
+        }
+
+        .div-submit-chat {
+            text-align: right;
+        }
+
+        #submit-chat {
+            color: #ffffff;
+            background-color: #5f6478;
+            width: 6%;
+            border-radius: 10px;
+            height: 32px;
+        }
+
+        #pp {
+            text-align: left;
+            color: #ffffff;
+        }
+
+        #res {
+            text-align: right;
+            color: #ffffff;
+        }
+    </style>
+</head>
+
+<body>
+    <form id="form-pergunta-chat">
+        <div>
+            <input id="campo-pergunta" placeholder="digite aqui...">
+        </div>
+        <div class="div-submit-chat">
+            <input type="submit" value="Enviar" id="submit-chat">
+        </div>
+
+    </form>
+
+    <script>
+        const FORM = document.getElementById('form-pergunta-chat')
+        const API_KEY = "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"
+        if (FORM) {
+            FORM.addEventListener('submit', async (event) => {
+                event.preventDefault()
+                let pergunta = document.getElementById('campo-pergunta').value
+                let pp = document.createElement('div')
+                let res = document.createElement('div')
+
+                pp.setAttribute('id', 'pp')
+                pp.setAttribute('style', 'text-align: left;')
+                res.setAttribute('id', 'res')
+                res.setAttribute('style', 'text-align: right;')
+
+                pp.innerHTML = "<br><br>" + pergunta
+
+                document.body.append(pp)
+
+                await fetch("https://api.openai.com/v1/completions", {
+                    method: "POST",
+                    headers: {
+                        Accept: "application/json",
+                        "Content-Type": "application/json",
+                        Authorization: "Bearer " + API_KEY
+                    },
+
+                    body: JSON.stringify({
+                        model: "text-davinci-003",
+                        prompt: pergunta,
+                        max_tokens: 2048,
+                        temperature: 0.5
+                    }),
+
+                })
+                    .then((response) => response.json())
+                    .then((dados) => {
+                        console.log(dados.choices[0].text);
+                        res.innerText = dados.choices[0].text
+                        document.body.append(res)
+                    }).catch((error) => {
+                        console.log(error)
+                    })
+            });
+        }
+    </script>
+</body>
+
+</html>
